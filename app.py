@@ -46,7 +46,7 @@ def login():
     return jsonify ({"message": "Unauthorized. Invalid credentials"}),401
 
 
-@app.rout('/logout', methods=['POST'])
+@app.route('/logout', methods=['POST'])
 @login_required
 def lofout():
     logout_user()
