@@ -9,6 +9,7 @@ app.config['SECRET_KEY'] = "minha_chave_123"
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///ecommerce.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # This is a good practice to avoid a warning
 
+
 login_manager = LoginManager()
 db = SQLAlchemy(app)
 login_manager.init_app(app)
@@ -131,6 +132,7 @@ def get_products():
         product_list.append(product_data)
     return jsonify(product_list)
 
+
 #CHECKOUT
 @app.route('/api/cart/add/<int:product_id>', methods=['POST'])
 @login_required
@@ -158,6 +160,7 @@ def remove_from_cart(product_id):
         return jsonify({'message': 'Item Removed from the cart sucessfully'})
     return jsonify({'message': 'Failed to remove item from the cart'}), 400
 
+
 @app.route('/api/cart', methods=['GET'])
 @login_required
 def view_cart():
@@ -175,6 +178,7 @@ def view_cart():
                                 "product_price": product.price
             })
     return jsonify(cart_content)
+
 
 @app.route('/api/cart/checkout', methods = ['POST'])
 @login_required
