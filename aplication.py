@@ -4,17 +4,17 @@ from flask_cors import CORS
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = "minha_chave_123"
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///ecommerce.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # This is a good practice to avoid a warning
+aplication = Flask(__name__)
+aplication.config['SECRET_KEY'] = "minha_chave_123"
+aplication.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///ecommerce.db"
+aplication.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # This is a good practice to avoid a warning
 
 
 login_manager = LoginManager()
-db = SQLAlchemy(app)
-login_manager.init_app(app)
+db = SQLAlchemy(aplication)
+login_manager.init_app(aplication)
 login_manager.login_view = 'login'
-CORS(app)
+CORS(aplication)
 
 #Modelagem
 class User(db.Model, UserMixin):
@@ -40,8 +40,11 @@ class CartItem(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@aplication.route('/')
+def initial():
+    return 'API up!'
 
-@app.route('/login', methods=['POST'])
+@aplication.route('/login', methods=['POST'])
 def login():
     data = request.json
     
@@ -53,14 +56,14 @@ def login():
     return jsonify ({"message": "Unauthorized. Invalid credentials"}),401
 
 
-@app.route('/logout', methods=['POST'])
+@aplication.route('/logout', methods=['POST'])
 @login_required
 def lofout():
     logout_user()
     return jsonify({"message": "Logout sucessfully"})
 
 
-@app.route('/api/products/add', methods= ["POST"])
+@aplication.route('/api/products/add', methods= ["POST"])
 @login_required
 def add_product():
     data = request.json
@@ -72,7 +75,7 @@ def add_product():
     return jsonify({"message": "Invalid product data"}), 400
 
 
-@app.route('/api/products/delete/<int:product_id>', methods = ["DELETE"])
+@aplication.route('/api/products/delete/<int:product_id>', methods = ["DELETE"])
 @login_required
 def delete_product(product_id):
     product= Product.query.get(product_id)
@@ -83,7 +86,7 @@ def delete_product(product_id):
     return jsonify({"message": "Product not found"}), 404
 
 
-@app.route('/api/products/<int:product_id>', methods = ["GET"])
+@aplication.route('/api/products/<int:product_id>', methods = ["GET"])
 @login_required
 def get_product_details(product_id):
     product = Product.query.get(product_id)
@@ -97,7 +100,7 @@ def get_product_details(product_id):
     return jsonify({"message": "Product not fount"}), 404
 
 
-@app.route('/api/products/update/<int:product_id>', methods = ["PUT"])
+@aplication.route('/api/products/update/<int:product_id>', methods = ["PUT"])
 @login_required
 def update_product(product_id):
     product = Product.query.get(product_id)
@@ -117,7 +120,7 @@ def update_product(product_id):
     return jsonify({'message': 'product updated ducessfully'})
 
     
-@app.route('/api/products', methods=['GET'])
+@aplication.route('/api/products', methods=['GET'])
 def get_products():
     products = Product.query.all()
     product_list = []
@@ -134,7 +137,7 @@ def get_products():
 
 
 #CHECKOUT
-@app.route('/api/cart/add/<int:product_id>', methods=['POST'])
+@aplication.route('/api/cart/add/<int:product_id>', methods=['POST'])
 @login_required
 def add_to_cart(product_id):
 
@@ -149,7 +152,7 @@ def add_to_cart(product_id):
     return jsonify({"message": "Failed to add item to the cart"}), 400
 
 
-@app.route('/api/cart/remove/<int:product_id>', methods=['DELETE'])
+@aplication.route('/api/cart/remove/<int:product_id>', methods=['DELETE'])
 @login_required
 
 def remove_from_cart(product_id):
@@ -161,7 +164,7 @@ def remove_from_cart(product_id):
     return jsonify({'message': 'Failed to remove item from the cart'}), 400
 
 
-@app.route('/api/cart', methods=['GET'])
+@aplication.route('/api/cart', methods=['GET'])
 @login_required
 def view_cart():
     user = User.query.get(int(current_user.id))
@@ -180,7 +183,7 @@ def view_cart():
     return jsonify(cart_content)
 
 
-@app.route('/api/cart/checkout', methods = ['POST'])
+@aplication.route('/api/cart/checkout', methods = ['POST'])
 @login_required
 
 def checkout():
@@ -193,4 +196,4 @@ def checkout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    aplication.run(debug=True)
